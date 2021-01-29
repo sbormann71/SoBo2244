@@ -42,5 +42,12 @@ namespace BitwiseLogic
     {
         return(~a)
     }
+
+    //% blockId="isBitSet" block="ist Bit %a von %b gesetzt?"
+    //% weight=98 blockGap=8
+    export function isBitSet(a: number, b:number) 
+    {
+        return ((b>>a) & 1) == 1;
+    }
 }
 
