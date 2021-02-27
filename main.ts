@@ -1,10 +1,29 @@
-input.onButtonPressed(Button.A, function () {
-    Ausgang = Ausgang * 2
-    if (Ausgang > 8) {
-        Ausgang = 1
-        basic.setLedColor(0xff0000)
-    } else {
-        basic.setLedColor(0x00ff00)
+function Einschalten (Einschaltseite: number) {
+    Ampel(1)
+    basic.pause(5000)
+    Ampel(2)
+    basic.pause(1000)
+    while (3 != Ereignis) {
+        Ueberwachungssignal(Einschaltseite, true)
+        basic.pause(1000)
+        Ueberwachungssignal(Einschaltseite, false)
+        basic.pause(1000)
+    }
+    Ereignis = 0
+    basic.pause(2000)
+    Ampel(3)
+}
+function Ueberwachungssignal (seite: number, an: boolean) {
+    if (seite == 1) {
+        Ausgang = BitwiseLogic.bitwise2arg(Ausgang, operator.and, 255 - 4)
+        if (an) {
+            Ausgang = BitwiseLogic.bitwise2arg(4, operator.or, Ausgang)
+        }
+    } else if (seite == 2) {
+        Ausgang = BitwiseLogic.bitwise2arg(Ausgang, operator.and, 255 - 8)
+        if (an) {
+            Ausgang = BitwiseLogic.bitwise2arg(8, operator.or, Ausgang)
+        }
     }
     pins.i2cWriteNumber(
     39,
@@ -12,17 +31,29 @@ input.onButtonPressed(Button.A, function () {
     NumberFormat.UInt8LE,
     false
     )
-})
+}
+function Ampel (dumm: number) {
+    Ausgang = BitwiseLogic.bitwise2arg(dumm, operator.or, BitwiseLogic.bitwise2arg(Ausgang, operator.and, 252))
+    pins.i2cWriteNumber(
+    39,
+    Ausgang + 112,
+    NumberFormat.UInt8LE,
+    false
+    )
+}
 let AltAk = false
 let AltEk2 = false
-let Ereignis = 0
 let AltEK1 = false
 let GelesenAK = false
 let GelesenEK2 = false
 let GelesenEK1 = false
 let gelesen = 0
+let Ereignis = 0
 let Ausgang = 0
-Ausgang = 1
+Ampel(3)
+Ueberwachungssignal(1, false)
+Ueberwachungssignal(2, false)
+Ausgang = 112
 basic.forever(function () {
     gelesen = pins.i2cReadNumber(39, NumberFormat.UInt8LE, false)
     GelesenEK1 = !(BitwiseLogic.isBitSet(4, gelesen))
@@ -42,4 +73,15 @@ basic.forever(function () {
     AltAk = GelesenAK
     basic.showString("" + (Ereignis))
     basic.pause(10)
+})
+basic.forever(function () {
+    if (1 == Ereignis) {
+        Ereignis = 0
+        Einschalten(1)
+    } else if (2 == Ereignis) {
+        Ereignis = 0
+        Einschalten(2)
+    } else {
+        Ereignis = 0
+    }
 })
