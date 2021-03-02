@@ -1,16 +1,16 @@
 function Einschalten (Einschaltseite: number) {
     Ampel(1)
-    basic.pause(5000)
+    basic.pause(2000)
     Ampel(2)
     basic.pause(1000)
     while (3 != Ereignis) {
         Ueberwachungssignal(Einschaltseite, true)
-        basic.pause(1000)
+        basic.pause(700)
         Ueberwachungssignal(Einschaltseite, false)
-        basic.pause(1000)
+        basic.pause(700)
     }
     Ereignis = 0
-    basic.pause(2000)
+    basic.pause(1500)
     Ampel(3)
 }
 function Ueberwachungssignal (seite: number, an: boolean) {
