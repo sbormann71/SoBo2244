@@ -1,4 +1,5 @@
 function Einschalten (Einschaltseite: number) {
+    basic.setLedColor(0xff0080)
     Ampel(1)
     basic.pause(2000)
     Ampel(2)
@@ -9,9 +10,13 @@ function Einschalten (Einschaltseite: number) {
         Ueberwachungssignal(Einschaltseite, false)
         basic.pause(700)
     }
-    Ereignis = 0
+    basic.setLedColor(0xffff00)
     basic.pause(1500)
     Ampel(3)
+    basic.setLedColor(0x00ffff)
+    basic.pause(20000)
+    Ereignis = 0
+    basic.turnRgbLedOff()
 }
 function Ueberwachungssignal (seite: number, an: boolean) {
     if (seite == 1) {
@@ -27,7 +32,7 @@ function Ueberwachungssignal (seite: number, an: boolean) {
     }
     pins.i2cWriteNumber(
     39,
-    Ausgang + 112,
+    Ausgang | 112,
     NumberFormat.UInt8LE,
     false
     )
@@ -36,7 +41,7 @@ function Ampel (dumm: number) {
     Ausgang = BitwiseLogic.bitwise2arg(dumm, operator.or, BitwiseLogic.bitwise2arg(Ausgang, operator.and, 252))
     pins.i2cWriteNumber(
     39,
-    Ausgang + 112,
+    Ausgang | 112,
     NumberFormat.UInt8LE,
     false
     )
